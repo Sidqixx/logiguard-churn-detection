@@ -1,9 +1,4 @@
-pandas
-scikit-learn
 streamlit
-joblib
-matplotlib
-seaborn
-wordcloud
 transformers
 torch
+pandas

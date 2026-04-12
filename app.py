@@ -1,58 +1,112 @@
 import streamlit as st
-import joblib
-import pandas as pd
+from transformers import pipeline
+import time
 
+st.set_page_config(
+    page_title="LogiGuard | Customer Churn Anticipate",
+    page_icon="📦",
+    layout="centered"
+)
 
-model = joblib.load('models/model_churn_rf.pkl')
-tfidf = joblib.load('models/tfidf_vectorizer.pkl')
+st.markdown("""
+    <style>
+    .main {
+        background-color: #f5f7f9;
+    }
+    .stButton>button {
+        width: 100%;
+        border-radius: 5px;
+        height: 3em;
+        background-color: #007bff;
+        color: white;
+    }
+    .status-box {
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 10px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-st.set_page_config(page_title="LogiGuard AI", page_icon="🚀", layout="wide")
+@st.cache_resource
+def load_model():
+    model_name = "mdhugol/indonesia-bert-sentiment-classification"
+    return pipeline("sentiment-analysis", model=model_name, tokenizer=model_name)
 
-with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/128/679/679821.png", width=100)
-    st.title("LogiGuard Engine")
-    st.info("Sistem ini didukung oleh **IndoBERT** & **Random Forest** dengan akurasi **92.99%**.")
-    st.divider()
-    st.write("Apps by: **Teuku Sidqi Aulia Rahmad**")
-    st.write("Project: Customer Retention Analysis")
+nlp = load_model()
 
-st.title("📦 Smart Logistics Churn Detector")
-st.subheader("Analisis Sentimen & Prediksi Loyalitas Customer")
+st.title("📦 LogiGuard")
+st.subheader("Intelligence Logistics Churn Prediction")
+st.write("---")
+st.markdown("""
+    Aplikasi ini menggunakan model **IndoBERT Deep Learning** yang telah divalidasi dengan 
+    **1.000+ data review J&T Express** untuk mendeteksi potensi *churn*.
+""")
 
-col1, col2 = st.columns([2, 1])
+with st.container():
+    user_input = st.text_area(
+        "Masukkan Review Customer:", 
+        placeholder="Tulis di sini (contoh: Paket lama banget nyampe, kurir ilang-ilangan..)",
+        height=150
+    )
+    
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        predict_btn = st.button("Analisis Sentimen & Potensi Churn")
 
-with col1:
-    st.markdown("### **Input Review Customer**")
-    user_review = st.text_area("Masukkan Review:", height=150, placeholder="Contoh: Paket saya sudah 2 minggu tidak sampai, kurir tidak bisa dihubungi!")
-    btn_predict = st.button("🚀 Prediksi Status Customer", use_container_width=True)
-
-if btn_predict:
-    if user_review:
-        # Transform & Predict
-        text_vector = tfidf.transform([user_review])
-        prediction = model.predict(text_vector)
-        prob = model.predict_proba(text_vector)
-        
-        with col2:
-            st.markdown("### **Hasil Analisis**")
-            if prediction[0] == 1:
-                st.error("🚨 **POTENSI CHURN**")
-                # Bikin Gauge/Metric sederhana
-                st.metric(label="Risk Level", value=f"{prob[0][1]*100:.1f}%")
-                st.warning("Customer ini kemungkinan besar akan berhenti menggunakan jasa karena bad experience.")
-            else:
-                st.success("✅ **LOYAL CUSTOMER**")
-                st.metric(label="Safety Level", value=f"{prob[0][0]*100:.1f}%")
-                st.info("Customer merasa puas menggunakan layanan.")
+if predict_btn:
+    if user_input.strip() != "":
+        with st.spinner('Processing...'):
+    
+            result = nlp(user_input[:512])[0]
+            label = result['label']
+            confidence = result['score']
             
-            # Tambah bar chart probabilitas
-            prob_df = pd.DataFrame({
-                'Status': ['Aman', 'Churn'],
-                'Probability': [prob[0][0], prob[0][1]]
-            })
-            st.bar_chart(prob_df.set_index('Status'))
+            time.sleep(0.5)
+            
+            st.write("### Hasil Analisis:")
+            
+            if label == 'LABEL_2':
+                st.error("### 🚨 STATUS: POTENSI CHURN")
+                st.markdown(f"""
+                    <div style='background-color: #ffebee; padding: 15px; border-radius: 10px; border: 1px solid #ffcdd2;'>
+                    <span style='color: #b71c1c; font-weight: bold;'>Analisis AI:</span> 
+                    <span style='color: #1a1a1a;'>PCustomer berpotensi Churn. Perlu penanganan.</span>
+                    <br><br>
+                    <span style='color: #1a1a1a;'><b>Confidence Level:</b> {confidence:.2%}</span>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+            elif label == 'LABEL_1':
+                st.success("### ✅ STATUS: AMAN / LOYAL")
+                st.markdown(f"""
+                    <div style='background-color: #e8f5e9; padding: 15px; border-radius: 10px; border: 1px solid #c8e6c9;'>
+                    <span style='color: #1b5e20; font-weight: bold;'>Analisis AI:</span> 
+                    <span style='color: #1a1a1a;'>Customer puas dengan layanan yang diberikan.</span>
+                    <br><br>
+                    <span style='color: #1a1a1a;'><b>Confidence Level:</b> {confidence:.2%}</span>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+            else:
+                st.info("### ➖ STATUS: NETRAL / FEEDBACK")
+                st.markdown(f"""
+                    <div style='background-color: #e3f2fd; padding: 15px; border-radius: 10px; border: 1px solid #bbdefb;'>
+                    <span style='color: #0d47a1; font-weight: bold;'>Analisis AI:</span> 
+                    <span style='color: #1a1a1a;'>Kalimat bersifat informatif atau memiliki sentimen campuran.</span>
+                    <br><br>
+                    <span style='color: #1a1a1a;'><b>Confidence Level:</b> {confidence:.2%}</span>
+                    </div>
+                """, unsafe_allow_html=True)
     else:
-        st.warning("Isi dulu teks review-nya!")
+        st.warning("Input tidak boleh kosong")
 
-st.divider()
-st.caption("© 2026 LogiGuard AI System- Teuku Sidqi Aulia Rahmad")
+st.sidebar.title("Model Metrics")
+st.sidebar.info(f"""
+    - **Model:** IndoBERT (Transformer)
+    - **Accuracy:** 91%
+    - **Recall (Churn):** 95%
+    - **Dataset:** 1,062 Curated Reviews
+""")
+st.sidebar.write("---")
+st.sidebar.write("Developed by:**Teuku Sidqi Aulia Rahmad**")
