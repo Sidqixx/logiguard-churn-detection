@@ -66,18 +66,18 @@ if predict_btn:
             
             st.write("### Hasil Analisis:")
             
-            if label == 'LABEL_2':
+            if label == 'LABEL_2': 
                 st.error("### 🚨 STATUS: POTENSI CHURN")
                 st.markdown(f"""
                     <div style='background-color: #ffebee; padding: 15px; border-radius: 10px; border: 1px solid #ffcdd2;'>
                     <span style='color: #b71c1c; font-weight: bold;'>Analisis AI:</span> 
-                    <span style='color: #1a1a1a;'>PCustomer berpotensi Churn. Perlu penanganan.</span>
+                    <span style='color: #1a1a1a;'>Customer berpotensi Churn. Perlu penanganan segera.</span>
                     <br><br>
                     <span style='color: #1a1a1a;'><b>Confidence Level:</b> {confidence:.2%}</span>
                     </div>
                 """, unsafe_allow_html=True)
                 
-            elif label == 'LABEL_1':
+            elif label == 'LABEL_0':
                 st.success("### ✅ STATUS: AMAN / LOYAL")
                 st.markdown(f"""
                     <div style='background-color: #e8f5e9; padding: 15px; border-radius: 10px; border: 1px solid #c8e6c9;'>
@@ -88,7 +88,7 @@ if predict_btn:
                     </div>
                 """, unsafe_allow_html=True)
                 
-            else:
+            else: 
                 st.info("### ➖ STATUS: NETRAL / FEEDBACK")
                 st.markdown(f"""
                     <div style='background-color: #e3f2fd; padding: 15px; border-radius: 10px; border: 1px solid #bbdefb;'>
