@@ -1,7 +1,6 @@
 # LogiGuard: Intelligence Logistics Churn Prediction
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://logiguard-churn-detection-mry5m9kxvkz97hdhnrpyxc.streamlit.app/)
-[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 
 LogiGuard adalah sistem deteksi *customer churn* berbasis **Deep Learning** yang dirancang khusus untuk industri logistik Indonesia (Studi Kasus: J&T Express). Menggunakan arsitektur Transformer (IndoBERT), sistem ini mampu memahami konteks ulasan pelanggan secara mendalam untuk memitigasi risiko kehilangan pelanggan.
 
