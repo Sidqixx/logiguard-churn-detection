@@ -23,4 +23,9 @@ Setelah melalui tahap validasi pada **1.062 ulasan terkurasi**, model ini mencat
 - **Data**: Google-Play-Scraper.
 - **Deployment**: Streamlit Cloud.
 
-## Insta
+# Installation & Usage
+1. https://github.com/Sidqixx/logiguard-churn-detection.git
+2. pip install -r requirements.txt
+3. streamlit run app.py
+
+Developed by **Teuku Sidqi Aulia Rahmad**
